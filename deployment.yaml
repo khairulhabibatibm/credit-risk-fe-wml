@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: creditrisk-fe
+  labels:
+    app: creditrisk-fe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: creditrisk-fe
+  template:
+    metadata:
+      labels:
+        app: creditrisk-fe
+    spec:
+      containers:
+      - name: creditrisk-fe
+        image: khairulhabib/creditrisk-fe:0.2.1
+        ports:
+        - containerPort: 8080
+        env:
+          - name: BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: creditrisk-properties
+                key: BASE_URL
+          - name: BACKEND_URI
+            valueFrom:
+              configMapKeyRef:
+                name: creditrisk-properties
+                key: BACKEND_URI
+          - name: BACKEND_URL
+            valueFrom:
+              configMapKeyRef:
+                name: creditrisk-properties
+                key: BACKEND_URL
+          - name: TOKEN_URI
+            valueFrom:
+              configMapKeyRef:
+                name: creditrisk-properties
+                key: TOKEN_URI
+          - name: CPDATA_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: creditrisk-properties
+                key: CPDATA_USERNAME
+          - name: CPDATA_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: creditrisk-secret
+                key: CPDATA_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: creditrisk-fe-service
+spec:
+  selector:
+    app: creditrisk-fe
+  ports:
+    - protocol: TCP
+      port: 8080
+
+          
